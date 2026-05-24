@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Вход - Родник</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&display=swap');
+        * { font-family: 'Inter', sans-serif; }
+        
+        .input-field {
+            transition: all 0.2s ease;
+        }
+        .input-field:focus {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(34, 197, 94, 0.15);
+        }
+        
+        @keyframes shake {
+            0%,100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+        .error-shake { animation: shake 0.3s ease-in-out; }
+        
+        .toast-custom {
+            position: fixed;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #1f2937;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 9999px;
+            font-size: 14px;
+            z-index: 1000;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            animation: fadeInOut 3s ease forwards;
+        }
+        .toast-custom.error { background: #dc2626; }
+        .toast-custom.success { background: #16a34a; }
+        
+        @keyframes fadeInOut {
+            0% { opacity: 0; transform: translateX(-50%) translateY(20px); }
+            15% { opacity: 1; transform: translateX(-50%) translateY(0); }
+            85% { opacity: 1; transform: translateX(-50%) translateY(0); }
+            100% { opacity: 0; transform: translateX(-50%) translateY(-20px); }
+        }
+        
+        .password-wrapper {
+            position: relative;
+        }
+        .password-toggle {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            user-select: none;
+            font-size: 20px;
+        }
+        
+        .name-status {
+            font-size: 13px;
+            margin-top: 6px;
+            padding: 4px 8px;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+        }
+        .name-status.success {
+            background-color: #f0fdf4;
+            color: #16a34a;
+            border-left: 3px solid #16a34a;
+        }
+        .name-status.error {
+            background-color: #fef2f2;
+            color: #dc2626;
+            border-left: 3px solid #dc2626;
+        }
+        .name-status.checking {
+            background-color: #fef3c7;
+            color: #d97706;
+            border-left: 3px solid #d97706;
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-green-50 via-emerald-50 to-teal-50 min-h-screen flex items-center justify-center p-4">
+    <div class="max-w-md w-full">
+        <div class="bg-white/80 backdrop-blur-sm rounded-3xl shadow-2xl overflow-hidden">
+            <div class="h-2 bg-gradient-to-r from-green-500 to-emerald-500"></div>
+            <div class="p-8">
+                <div class="text-center mb-8">
+                    <div class="text-5xl mb-3">🌿</div>
+                    <h1 class="text-3xl font-bold text-gray-800">Родник</h1>
+                    <p class="text-gray-500 mt-1">Вход в мессенджер</p>
+                </div>
+                
+                <div class="space-y-5">
+                    <div>
+                        <label class="block text-gray-700 font-medium mb-2 text-sm">Ваше имя</label>
+                        <input type="text" id="displayName" 
+                               placeholder="Например: Владимир"
+                               class="input-field w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-green-400 transition">
+                        <div id="nameStatus" class="name-status mt-1 hidden"></div>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-gray-700 font-medium mb-2 text-sm">Пароль</label>
+                        <div class="password-wrapper">
+                            <input type="password" id="password" 
+                                   placeholder="Ваш пароль"
+                                   class="input-field w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-green-400 transition pr-12">
+                            <span class="password-toggle" onclick="togglePassword()">👁️</span>
+                        </div>
+                        <div class="text-right mt-1">
+                            <a href="/reset-password" class="text-sm text-green-600 hover:text-green-700 transition">Забыли пароль?</a>
+                        </div>
+                    </div>
+                    
+                    <button id="loginBtn" 
+                            class="w-full bg-gradient-to-r from-green-600 to-emerald-600 text-white py-3 rounded-xl text-lg font-semibold hover:scale-[1.02] transition-all shadow-lg">
+                        Войти
+                    </button>
+                </div>
+                
+                <div class="mt-6 text-center">
+                    <p class="text-gray-500">Нет аккаунта? <a href="/register" class="text-green-600 font-semibold">Зарегистрироваться</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        let nameCheckTimeout;
+        
+        function togglePassword() {
+            const input = document.getElementById('password');
+            const toggle = document.querySelector('.password-toggle');
+            if (input.type === 'password') {
+                input.type = 'text';
+                toggle.textContent = '🙈';
+            } else {
+                input.type = 'password';
+                toggle.textContent = '👁️';
+            }
+        }
+        
+        function showMessage(text, isError = true) {
+            const existing = document.querySelector('.toast-custom');
+            if (existing) existing.remove();
+            
+            const toast = document.createElement('div');
+            toast.className = `toast-custom ${isError ? 'error' : 'success'}`;
+            toast.textContent = text;
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
+        }
+        
+        const displayNameInput = document.getElementById('displayName');
+        const nameStatus = document.getElementById('nameStatus');
+        
+        displayNameInput.addEventListener('input', function() {
+            const name = this.value.trim();
+            
+            if (name.length < 2) {
+                nameStatus.classList.add('hidden');
+                this.classList.remove('border-green-400', 'border-red-400');
+                return;
+            }
+            
+            nameStatus.classList.remove('hidden');
+            nameStatus.className = 'name-status checking';
+            nameStatus.innerHTML = '⏳ Проверка...';
+            
+            clearTimeout(nameCheckTimeout);
+            nameCheckTimeout = setTimeout(async () => {
+                try {
+                    const res = await fetch('/api/check-name', {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify({display_name: name})
+                    });
+                    const data = await res.json();
+                    
+                    if (data.exists) {
+                        nameStatus.className = 'name-status success';
+                        nameStatus.innerHTML = `✅ Имя "${name}" существует`;
+                        this.classList.add('border-green-400');
+                        this.classList.remove('border-red-400');
+                    } else {
+                        nameStatus.className = 'name-status error';
+                        nameStatus.innerHTML = `❌ Имя "${name}" не найдено`;
+                        this.classList.add('border-red-400');
+                        this.classList.remove('border-green-400');
+                    }
+                } catch(e) {
+                    console.log('Check error:', e);
+                }
+            }, 500);
+        });
+        
+        async function login() {
+            const displayName = displayNameInput.value.trim();
+            const password = document.getElementById('password').value;
+            
+            if (!displayName || !password) {
+                showMessage('❌ Заполните все поля');
+                return;
+            }
+            
+            const res = await fetch('/api/login', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({display_name: displayName, password})
+            });
+            
+            const data = await res.json();
+            if (res.ok) {
+                localStorage.setItem('token', data.token);
+                localStorage.setItem('user', JSON.stringify(data.user));
+                showMessage('✅ Добро пожаловать!', false);
+                setTimeout(() => {
+                    window.location.href = '/chat';
+                }, 1000);
+            } else {
+                showMessage(data.error || '❌ Неверное имя или пароль');
+                displayNameInput.classList.add('error-shake');
+                setTimeout(() => displayNameInput.classList.remove('error-shake'), 300);
+            }
+        }
+        
+        document.getElementById('loginBtn').addEventListener('click', login);
+        document.getElementById('password').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') login();
+        });
+    </script>
+</body>
+</html>
