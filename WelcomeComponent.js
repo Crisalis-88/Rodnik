@@ -4,7 +4,7 @@ import { Text, View } from 'react-native';
 const WelcomeComponent = () => {
   return (
     <View>
-        <Text>Доброе утро, {name}</Text>
+        <Text style="fontSize:30px">Доброе утро</Text>
     </View>
   );
 };

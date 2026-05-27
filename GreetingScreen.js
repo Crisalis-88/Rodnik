@@ -1,7 +1,7 @@
 import { StyleSheet, Text, Platform, StatusBar, View} from 'react-native';
 // import { ImageBackground } from 'react-native/types_generated/index';
 import { LinearGradient } from 'expo-linear-gradient';
-import { WelcomeComponent } from "../components/WelcomeComponent";
+import WelcomeComponent from "../components/WelcomeComponent";
 
 function GreetingScreen() {
   return (
@@ -14,7 +14,7 @@ function GreetingScreen() {
     style={{ flex: 1 }}>
         <View>
             <View>
-                <WelcomeComponent name="Misha"/>
+                <WelcomeComponent/>
             </View>
         </View>
 
