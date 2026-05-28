@@ -4,7 +4,7 @@ import GreetingScreen from './screens/GreetingScreen';
 
 export default function App() {
   return (
-    <View style={styles.container}>
+    <View>
       <GreetingScreen style={styles.container}/>
     </View>
   );
@@ -13,6 +13,7 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    color: "#FFF",
   }
 
   
